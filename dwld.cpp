@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <regex>
+#include <fstream>
 
 
 void set_year(const char* filename, int anno){
@@ -59,32 +60,49 @@ void rename(std::filesystem::path dir) {
 
 
 
-int main() {
+int main(int argc, char* argv[]) {
 
-char risposta{};
+//char risposta{};
+if (argc < 2) {
+		std::cerr << "No input file!" << std::endl;
+		std::cerr << "Usage: " << std::endl;
+		std::cerr << argv[0] << " <filename> " << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	std::ifstream inputFile;
+	try {
+		inputFile.open(argv[1]);
+	}
+	catch (std::exception& e) {
+		// Whatever exception is raised, end up here
+		std::cerr << "Cannot open " << argv[1] << " got: " << std::endl;
+		std::cerr << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+std::string riga;
+std::string prova;
+ int anno{0};
+ std::string url{};
+ std::filesystem::path artista{};
+ std::filesystem::path album{};
+
+	if (inputFile.is_open()) {
+while (inputFile >> url >> anno >> artista >> album){
+// std::cout << url << " " << anno << " " << artista << " " << album;
 char aspetta{};
 std::string ytdlp{"yt-dlp --extract-audio --audio-format mp3 --audio-quality 0 --embed-metadata --embed-thumbnail  --output \"~/Album/%(artist)s - %(album)s - %(playlist_index)02d %(title)s.%(ext)s\" "};
 
-    do {
-
-        std::filesystem::path dir{"/home/martino/Album"};
-        int anno{0};
+        std::filesystem::path dir{"/data/data/com.termux/files/home/Album"};
         const char* cdir{};
         int i{1};
-        std::string url{};
+
         std::vector<std::filesystem::directory_entry> files;
 
-        std::cout << "Inserire URL playlist:" << std::endl;
-        std::cin >> url;
-        std::cout << "Inserire anno:" << std::endl;
-        std::cin >> anno;
         std::string str{};
         std::string comando = ytdlp + url;
         system(comando.c_str());
         std::cin >> aspetta;
-
-
-
 
 
         try {
@@ -120,13 +138,7 @@ std::string ytdlp{"yt-dlp --extract-audio --audio-format mp3 --audio-quality 0 -
         std::cerr << "Errore filesystem: " << e.what() << std::endl;
     }
 
-    std::filesystem::path artista{};
-    std::cout << "Inserire Artista: " << std::endl;
-    std::cin >> artista;
-    std::filesystem::path album{};
-    std::cout << "Inserire Album: " << std::endl;
-    std::cin >> album;
-    const std::filesystem::path percorso =  "/home/martino/Musica/Playlist/" / artista;
+    const std::filesystem::path percorso =  "/data/data/com.termux/files/home/storage/music/Playlist" / artista;
 
     if (std::filesystem::create_directory(percorso))
         std::cout << "Directory creata!" << std::endl;
@@ -150,11 +162,9 @@ std::string ytdlp{"yt-dlp --extract-audio --audio-format mp3 --audio-quality 0 -
 
         system(comando_cover.c_str());
 
-        std::cout << "Continuare? [s/n] " << std::endl;
-        std::cin >> risposta;
-
-        } while (risposta == 's' || risposta == 'S');
-
+        }
+        inputFile.close();
+	}
 
     return 0;
 
