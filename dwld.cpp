@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 
 	Tagger tagger(filereader.getYear(), path);
 	tagger.order();
+	tagger.cover();
 
     return 0;
 }
