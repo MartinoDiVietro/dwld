@@ -68,14 +68,15 @@ void Tagger::cover() const {
     std::string parametro{};
 
     std::string comando{};
-    std::string comando1{"ffmpeg -i "};
+    std::string comando1{"ffmpeg -v quiet -i "};
     std::string comando2{" -an -vcodec copy \"cover.jpg\""};
     std::string virg{"\""};
     std::string stringa2{" -i \"cover_700x700.jpg\" -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (700x700)\" \"tmp.mp3\""};
     std::string stringa3{"mv tmp.mp3 "};
-
+    std::cout << "Sistemando immagini di copertina ... " << std::endl;
 
     for (const auto& entry : std::filesystem::directory_iterator(percorso)) {
+
 
         parametro = entry.path();
 
@@ -83,7 +84,7 @@ void Tagger::cover() const {
 
         system(comando.c_str());
 
-        system("ffmpeg -i \"cover.jpg\" -vf \"crop=700:700:(in_w-700)/2:(in_h-700)/2\" \"cover_700x700.jpg\"");
+        system("ffmpeg -v quiet -i \"cover.jpg\" -vf \"crop=700:700:(in_w-700)/2:(in_h-700)/2\" \"cover_700x700.jpg\"");
 
         comando = comando1 + virg + parametro + virg + stringa2;
         system(comando.c_str());
