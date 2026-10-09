@@ -36,11 +36,21 @@ percorsi[i] = alb_dir.string();
 }
 
 
-void Folderer::ytdlp(std::vector<std::string>& Url, const std::vector<std::string> percorsi) const {
+int Folderer::ytdlp(std::vector<std::string>& Url, const std::vector<std::string> percorsi) const {
 
          std::string comando{};
+         int status = 0;
+         int cont = 0;
      for(size_t i = 0; i < Url.size(); ++i){
+             std::cout << "Download album " << i+1 << " di " << Url.size() << std::endl;
          comando = ytdlp_ + " \"" + percorsi[i] + "\" " + " \"" + Url[i] + "\" " ;
-              std::system(comando.c_str());
+           status = std::system(comando.c_str());
+
+                   if (status != 0) {
+
+                      std::cerr << "Errore nel download dell'album numero " << i+1 << std::endl;
+                      cont++;
+                   }
 }
+                      return cont;
 }
